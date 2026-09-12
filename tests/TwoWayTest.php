@@ -235,4 +235,97 @@ class TwoWayTest extends TestCase
             'status' => Client::TRANSACTION_STATUS_REJECTED,
         ]);
     }
+
+    public function test_accepting_an_already_responded_druid_does_not_redelegate_to_the_client(): void
+    {
+        $mockClient = $this->createMock(Client::class);
+        $mockClient->method('openWallet')->willReturn(true);
+
+        $wallet = $this->openWalletWithKeypair($mockClient);
+
+        $wallet->transactions()->create([
+            'druid' => 'DRUID-already-accepted',
+            'status' => Client::TRANSACTION_STATUS_ACCEPTED,
+            'nonce' => '',
+            'content' => '',
+            'sender_expectation' => ['from' => '', 'to' => 'someone-else', 'asset' => ['Token' => 1]],
+            'receiver_expectation' => ['from' => '', 'to' => 'my-address', 'asset' => ['Token' => 1]],
+            'mempool_host' => 'https://mempool.example',
+        ]);
+
+        $mockClient->expects($this->never())->method('accept2WayPayment');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageMatches('/already been responded to/');
+
+        Lineage::acceptPendingTransaction('DRUID-already-accepted');
+    }
+
+    public function test_rejecting_an_already_responded_druid_does_not_redelegate_to_the_client(): void
+    {
+        $mockClient = $this->createMock(Client::class);
+        $mockClient->method('openWallet')->willReturn(true);
+
+        $wallet = $this->openWalletWithKeypair($mockClient);
+
+        $wallet->transactions()->create([
+            'druid' => 'DRUID-already-rejected',
+            'status' => Client::TRANSACTION_STATUS_REJECTED,
+            'nonce' => '',
+            'content' => '',
+            'sender_expectation' => ['from' => '', 'to' => 'someone-else', 'asset' => ['Token' => 1]],
+            'receiver_expectation' => ['from' => '', 'to' => 'my-address', 'asset' => ['Token' => 1]],
+            'mempool_host' => 'https://mempool.example',
+        ]);
+
+        $mockClient->expects($this->never())->method('reject2WayPayment');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessageMatches('/already been responded to/');
+
+        Lineage::rejectPendingTransaction('DRUID-already-rejected');
+    }
+
+    public function test_duplicate_incoming_offer_poll_does_not_create_a_second_row(): void
+    {
+        $mockClient = $this->createMock(Client::class);
+        $mockClient->method('openWallet')->willReturn(true);
+
+        $incomingOffer = [
+            'druid' => 'DRUID-incoming-repeat',
+            'senderExpectation' => ['from' => '', 'to' => 'someone-else', 'asset' => ['Token' => 1]],
+            'receiverExpectation' => ['from' => '', 'to' => 'my-address', 'asset' => ['Token' => 1]],
+            'status' => Client::TRANSACTION_STATUS_PENDING,
+            'mempoolHost' => 'https://mempool.example',
+        ];
+
+        $mockClient->method('fetchPending2WayPayment')->willReturn([
+            'pending' => [$incomingOffer['druid'] => $incomingOffer],
+            'settled' => [],
+        ]);
+
+        $wallet = $this->openWalletWithKeypair($mockClient);
+
+        // Simulate a druid that has already been handled (e.g. accepted) previously,
+        // so it no longer shows up among this wallet's stored *pending* rows, yet the
+        // server still reports it back in a later poll response.
+        $wallet->transactions()->create([
+            'druid' => $incomingOffer['druid'],
+            'status' => Client::TRANSACTION_STATUS_ACCEPTED,
+            'nonce' => '',
+            'content' => '',
+            'sender_expectation' => $incomingOffer['senderExpectation'],
+            'receiver_expectation' => $incomingOffer['receiverExpectation'],
+            'mempool_host' => $incomingOffer['mempoolHost'],
+        ]);
+
+        Lineage::getPendingTransactions();
+
+        $this->assertDatabaseCount('lineage_transactions', 1);
+
+        $this->assertDatabaseHas('lineage_transactions', [
+            'druid' => $incomingOffer['druid'],
+            'status' => Client::TRANSACTION_STATUS_ACCEPTED,
+        ]);
+    }
 }

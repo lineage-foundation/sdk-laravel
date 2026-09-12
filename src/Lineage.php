@@ -261,22 +261,30 @@ class Lineage
                 ->update(['status' => Client::TRANSACTION_STATUS_ACCEPTED]);
         }
 
-        $knownDruids = $storedRows->pluck('druid')->all();
+        // Dedup against every druid ever seen for this wallet (any status), not just
+        // the currently-pending ones above, since an already-handled druid can still
+        // reappear in a poll response.
+        $knownDruids = $this->activeWallet->transactions()->pluck('druid')->all();
 
         foreach ($result['pending'] as $druid => $details) {
             if (in_array($druid, $knownDruids, true)) {
                 continue;
             }
 
-            $this->activeWallet->transactions()->create([
-                'druid' => $druid,
-                'status' => $details['status'] ?? Client::TRANSACTION_STATUS_PENDING,
-                'nonce' => '',
-                'content' => '',
-                'sender_expectation' => $details['senderExpectation'] ?? null,
-                'receiver_expectation' => $details['receiverExpectation'] ?? null,
-                'mempool_host' => $details['mempoolHost'] ?? null,
-            ]);
+            // firstOrCreate (backed by the unique index on `druid`) keeps a duplicate
+            // poll response from creating a second row or a fatal unique-constraint
+            // error, without disturbing an already-handled row's status.
+            $this->activeWallet->transactions()->firstOrCreate(
+                ['druid' => $druid],
+                [
+                    'status' => $details['status'] ?? Client::TRANSACTION_STATUS_PENDING,
+                    'nonce' => '',
+                    'content' => '',
+                    'sender_expectation' => $details['senderExpectation'] ?? null,
+                    'receiver_expectation' => $details['receiverExpectation'] ?? null,
+                    'mempool_host' => $details['mempoolHost'] ?? null,
+                ]
+            );
         }
 
         return $result['pending'];
@@ -304,6 +312,12 @@ class Lineage
 
         if (!$row) {
             throw new Exception("No pending trade request found for DRUID \"{$druid}\"");
+        }
+
+        if ($row->status !== Client::TRANSACTION_STATUS_PENDING) {
+            throw new Exception(
+                "Trade request for DRUID \"{$druid}\" has already been responded to (status: \"{$row->status}\")."
+            );
         }
 
         $details = [
