@@ -32,14 +32,18 @@ class SendItemToAddress extends Command
             $selectedAssets = $this->assetsSelect();
             $addressToSendTo = $this->promptForNonEmptyString("To which address do you want to send this?");
 
-            $rs = \Lineage::sendAssetToAddress(
-                address: $addressToSendTo,
-                asset: \Lineage::getPaymentAssetObject(
+            if ($selectedAssets['name'] === 'tokens') {
+                $rs = \Lineage::makeTokenPayment(
+                    address: $addressToSendTo,
                     amount: $selectedAssets['qty'],
-                    hash: $selectedAssets['name'],
-                    metaData: null
-                ),
-            );
+                );
+            } else {
+                $rs = \Lineage::makeItemPayment(
+                    address: $addressToSendTo,
+                    amount: $selectedAssets['qty'],
+                    genesisHash: $selectedAssets['name'],
+                );
+            }
 
             dump($rs);
         } catch (\Exception $e) {

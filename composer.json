@@ -15,7 +15,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Lineage\\Tests\\": "tests/"
+            "Lineage\\Tests\\": "tests/",
+            "App\\": "tests/Support/App/"
         }
     },
     "authors": [

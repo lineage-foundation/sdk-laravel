@@ -4,6 +4,7 @@ namespace Lineage\Console\Commands;
 
 use Illuminate\Console\Command;
 use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NotImplemented;
 
 class AcceptPendingTransaction extends Command
 {
@@ -24,16 +25,23 @@ class AcceptPendingTransaction extends Command
 
     /**
      * Execute the console command.
+     *
+     * 2-way payments (trade requests) are deferred until the /v1 endpoints
+     * for them land, so this surfaces the deferral rather than pretending
+     * to open a wallet for an operation that cannot complete.
      */
-    public function handle()
+    public function handle(): int
     {
-        $this->openWallet();
         $druid = $this->promptForNonEmptyString("What is the DRUID reference to the transaction?");
 
-        $result = \Lineage::acceptPendingTransaction(
-            druid: $druid,
-        );
+        try {
+            \Lineage::acceptPendingTransaction(druid: $druid);
+        } catch (NotImplemented $e) {
+            $this->error($e->getMessage());
 
-        dump($result);
+            return self::FAILURE;
+        }
+
+        return self::SUCCESS;
     }
 }

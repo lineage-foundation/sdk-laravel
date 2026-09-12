@@ -4,6 +4,7 @@ namespace Lineage\Console\Commands;
 
 use Illuminate\Console\Command;
 use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NotImplemented;
 
 class CreateTradeRequest extends Command
 {
@@ -24,39 +25,26 @@ class CreateTradeRequest extends Command
 
     /**
      * Execute the console command.
+     *
+     * 2-way payments (trade requests) are deferred until the /v1 endpoints
+     * for them land, so this command no longer walks the wallet/asset
+     * selection flow - it surfaces the deferral immediately.
      */
-    public function handle()
+    public function handle(): int
     {
-        $senderWallet = $this->openWallet(question: "Email address of initiator?");
-        $selectedAssetsToSend = $this->assetsSelect();
-        $myAddress = $this->keypairSelect(
-            question: "Which address do you want to receive the assets in?",
-            wallet: $senderWallet
-        )->address;
+        try {
+            \Lineage::createTradeRequest(
+                otherPartyAddress: '',
+                myAsset: null,
+                myAddress: '',
+                otherPartyAsset: null,
+            );
+        } catch (NotImplemented $e) {
+            $this->error($e->getMessage());
 
-        $otherPartyAddress = $this->promptForNonEmptyString("What is the address to send your assets to?");
-        $receiveHash = $this->promptForNonEmptyString("What is the hash of the asset you wish to receive?", 'tokens');
-        $receiveQty = $this->promptForNonEmptyString("How many $receiveHash you wish to receive?");
+            return self::FAILURE;
+        }
 
-        $sendAsset = \Lineage::getPaymentAssetObject(
-            amount: $selectedAssetsToSend['qty'],
-            hash: $selectedAssetsToSend['name'],
-            metaData: null
-        );
-
-        $receiveAsset = \Lineage::getPaymentAssetObject(
-            amount: $receiveQty,
-            hash: $receiveHash,
-            metaData: null
-        );
-
-        $transaction = \Lineage::createTradeRequest(
-            myAddress: $myAddress,
-            myAsset: $sendAsset,
-            otherPartyAddress: $otherPartyAddress,
-            otherPartyAsset: $receiveAsset
-        );
-
-        dump($transaction);
+        return self::SUCCESS;
     }
 }

@@ -30,8 +30,6 @@ class CreateItem extends Command
         $wallet = $this->openWallet();
         $keyPair = $this->keypairSelect(wallet: $wallet);
 
-        $itemName = $this->promptForNonEmptyString("What is the item?");
-
         do {
             $qtyResponse = $this->promptForNonEmptyString("How many items?");
 
@@ -42,12 +40,17 @@ class CreateItem extends Command
             }
         } while (!isset($qty));
 
-        $item = \Lineage::createAsset(
+        $metadata = $this->ask("Any metadata for this item? (optional)");
+        $useDefaultGenesisHash = $this->confirm("Use the default genesis hash?", true);
+
+        $item = \Lineage::createItems(
             keyPair: $keyPair,
-            name: $itemName,
-            amount: $qty
+            defaultGenesisHash: $useDefaultGenesisHash,
+            amount: $qty,
+            metadata: $metadata ?: null,
         );
 
-        $this->line("$qty items named '$itemName' created, unique hash: {$item->getDrsTxHash()}");
+        $this->line("$qty item(s) created for keypair '{$keyPair->name}'");
+        dump($item);
     }
 }
