@@ -48,6 +48,7 @@ class SendItemToAddress extends Command
             dump($rs);
         } catch (\Exception $e) {
             $this->error($e->getMessage());
+            return self::FAILURE;
         }
     }
 }

@@ -11,7 +11,7 @@ use Exception;
 
 trait UserWallets
 {
-    public function promptForNonEmptyString(string $question, string $default = null): string
+    public function promptForNonEmptyString(string $question, ?string $default = null): string
     {
         do {
             $string = $this->ask($question, $default);
@@ -23,7 +23,7 @@ trait UserWallets
         return $string;
     }
 
-    public function openWallet(string $question = null, bool $closeExisting = false): ?LineageWallet
+    public function openWallet(?string $question = null, bool $closeExisting = false): ?LineageWallet
     {
         if($closeExisting === true || !\Lineage::getActiveWallet()) {
             $user = $this->findUserByEmail($question);
@@ -76,7 +76,7 @@ trait UserWallets
         return $return;
     }
 
-    private function findUserByEmail(string $question = null): User
+    private function findUserByEmail(?string $question = null): User
     {
         do {
             $email = $this->promptForNonEmptyString($question ?? "What is the user's email address?");
@@ -109,7 +109,7 @@ trait UserWallets
         return $wallets->where('name', $walletName)->first();
     }
 
-    public function keypairSelect(LineageWallet $wallet, string $question = null): LineageKeypair
+    public function keypairSelect(LineageWallet $wallet, ?string $question = null): LineageKeypair
     {
         $keypairs = $wallet->keypairs()->orderBy('created_at', 'DESC')->get();
 
