@@ -2,6 +2,7 @@
     "name": "lineage/laravel",
     "description": "Laravel wrapper for the Lineage blockchain SDK",
     "type": "library",
+    "version": "0.2.0",
     "license": "MIT",
     "keywords": [
         "blockchain",
