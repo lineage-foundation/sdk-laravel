@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0b6c3bb9fa18b2739902fb801e1349e1",
+    "content-hash": "a54fa775e5f6431f87ab5bfa1262ed70",
     "packages": [
         {
             "name": "furqansiddiqui/bip39-mnemonic-php",
@@ -378,11 +378,11 @@
         },
         {
             "name": "lineage/php",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "dist": {
                 "type": "path",
                 "url": "../sdk-php",
-                "reference": "b0dee111a8d9002dbf3bb88e025bad12b2f8f923"
+                "reference": "9b358eaaa602b23458900493d8a46c05ed186fd0"
             },
             "require": {
                 "ext-sodium": "*",

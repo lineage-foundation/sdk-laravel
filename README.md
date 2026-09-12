@@ -15,13 +15,16 @@ composer require lineage/laravel
 
 ## Configuration
 
-`lineage/laravel` talks to two hosts:
+`lineage/laravel` talks to three hosts:
 
 - **`LINEAGE_MEMPOOL_HOST`** – the node that accepts writes (wallets, keypairs,
   items, payments) and answers live queries (balances, supply, transaction status).
 - **`LINEAGE_STORAGE_HOST`** – the node that serves stored chain history (blocks,
   blockchain entries). This can be the same host as the mempool, or a dedicated
   read/storage node.
+- **`LINEAGE_VALENCE_HOST`** – required for 2-way payments only: the mailbox
+  service `createTradeRequest`/`getPendingTransactions`/`acceptPendingTransaction`/
+  `rejectPendingTransaction` use to exchange DRUID trade offers between parties.
 - **`LINEAGE_API_KEY`** – optional, sent as the `x-api-key` header on every request.
 
 Add to your `.env`:
@@ -29,6 +32,7 @@ Add to your `.env`:
 ```
 LINEAGE_MEMPOOL_HOST=https://mempool.lineage.to
 LINEAGE_STORAGE_HOST=https://storage.lineage.to
+LINEAGE_VALENCE_HOST=https://valence.lineage.to
 LINEAGE_API_KEY=
 ```
 
@@ -105,12 +109,35 @@ Lineage::makeTokenPayment(address: $recipientAddress, amount: 1000);
 Note that a newly created/transferred asset only shows up in a subsequent
 `fetchBalance()` call once it has been confirmed by the mempool.
 
-### 2-way payments (deferred)
+### 2-way payments
 
 `createTradeRequest`, `getPendingTransactions`, `acceptPendingTransaction` and
-`rejectPendingTransaction` (DRUID-based dual double-entry trades) are **not yet
-implemented** against `/v1` — each throws `Lineage\Exceptions\NotImplemented` until
-the corresponding `/v1` endpoints land, mirroring `lineage/php`'s own `Client`.
+`rejectPendingTransaction` (DRUID-based dual double-entry trades) delegate to
+`lineage/php`'s `Client::make2WayPayment` / `fetchPending2WayPayment` /
+`accept2WayPayment` / `reject2WayPayment`. On top of that, `createTradeRequest`
+persists the initiator's pending half (druid, encrypted half, and both
+expectations) to a `lineage_transactions` row, and `getPendingTransactions`
+uses those stored rows to settle accepted offers and to remember incoming
+offers so a later `acceptPendingTransaction($druid)` /
+`rejectPendingTransaction($druid)` call can look them up — callers never have
+to hand-manage the encrypted half themselves.
+
+```php
+// Offer to trade 100 tokens for the other party's 50 tokens.
+$pending = Lineage::createTradeRequest(
+    otherPartyAddress: $otherPartyAddress,
+    myAsset: Serialization::assetToken(100),
+    myAddress: $keypair->address,
+    otherPartyAsset: Serialization::assetToken(50),
+);
+
+// Poll for settlement/incoming offers.
+$incoming = Lineage::getPendingTransactions();
+
+// Accept or reject an incoming offer by its DRUID.
+Lineage::acceptPendingTransaction($druid);
+Lineage::rejectPendingTransaction($druid);
+```
 
 ### Wire compatibility with sdk-js, sdk-python, sdk-go
 
@@ -137,10 +164,10 @@ Individual commands:
 - `lineage:create-keypair-for-wallet` – create a keypair
 - `lineage:create-item` – mint item assets in a wallet
 - `lineage:send-item-to-address` – send tokens or an item to an address
-- `lineage:get-pending-transactions` – deferred (throws `NotImplemented`)
-- `lineage:create-trade-request` – deferred (throws `NotImplemented`)
-- `lineage:accept-pending-transaction` – deferred (throws `NotImplemented`)
-- `lineage:reject-pending-transaction` – deferred (throws `NotImplemented`)
+- `lineage:create-trade-request` – offer a 2-way (DRUID) token trade
+- `lineage:get-pending-transactions` – poll for settled/incoming 2-way trades
+- `lineage:accept-pending-transaction` – accept an incoming 2-way trade by DRUID
+- `lineage:reject-pending-transaction` – reject an incoming 2-way trade by DRUID
 
 ## Testing
 

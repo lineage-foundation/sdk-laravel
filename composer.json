@@ -29,7 +29,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "lineage/php": "^0.2.0"
+        "lineage/php": "^0.3.0"
     },
     "require-dev": {
         "orchestra/testbench": "^10.0 || ^11.0"
