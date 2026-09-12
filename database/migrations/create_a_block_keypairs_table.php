@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class () extends Migration {
     public function up(): void
     {
-        Schema::create('a_block_keypairs', function (Blueprint $table) {
+        Schema::create('lineage_keypairs', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('a_block_wallet_id');
+            $table->bigInteger('lineage_wallet_id');
             $table->string('name');
             $table->string('save');
             $table->string('nonce');
@@ -17,7 +17,7 @@ return new class () extends Migration {
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['a_block_wallet_id', 'name']);
+            $table->unique(['lineage_wallet_id', 'name']);
         });
     }
 };

@@ -1,6 +1,6 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Exceptions;
+namespace Lineage\Exceptions;
 
 use Illuminate\Http\Response;
 use Exception;

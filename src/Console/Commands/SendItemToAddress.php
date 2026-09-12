@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class SendItemToAddress extends Command
 {
@@ -18,14 +13,14 @@ class SendItemToAddress extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:send-item-to-address';
+    protected $signature = 'lineage:send-item-to-address';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates a wallet for an existing user';
+    protected $description = 'Send an item to an address';
 
     /**
      * Execute the console command.
@@ -37,9 +32,9 @@ class SendItemToAddress extends Command
             $selectedAssets = $this->assetsSelect();
             $addressToSendTo = $this->promptForNonEmptyString("To which address do you want to send this?");
 
-            $rs = AWallet::sendAssetToAddress(
+            $rs = \Lineage::sendAssetToAddress(
                 address: $addressToSendTo,
-                asset: AWallet::getPaymentAssetObject(
+                asset: \Lineage::getPaymentAssetObject(
                     amount: $selectedAssets['qty'],
                     hash: $selectedAssets['name'],
                     metaData: null

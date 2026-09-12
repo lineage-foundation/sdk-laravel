@@ -1,12 +1,11 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use AWallet;
 use Exception;
 use Illuminate\Console\Command;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
+use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NameNotUniqueException;
 
 class CreateKeypairForWallet extends Command
 {
@@ -16,14 +15,14 @@ class CreateKeypairForWallet extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:create-keypair-for-wallet';
+    protected $signature = 'lineage:create-keypair-for-wallet';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates a keypair for an existing wallet';
+    protected $description = 'Create a keypair for an existing wallet';
 
     /**
      * Execute the console command.
@@ -35,7 +34,7 @@ class CreateKeypairForWallet extends Command
         do {
             try {
                 $name = $this->promptForNonEmptyString('Please enter a name for this keypair');
-                $keyPair = AWallet::createKeypair($name);
+                $keyPair = \Lineage::createKeypair($name);
             } catch (NameNotUniqueException $e) {
                 $this->error('There is already a keypair for this wallet with that name');
             } catch (Exception $e) {

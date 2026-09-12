@@ -1,25 +1,25 @@
 <?php
 
-namespace IODigital\ABlockLaravel;
+namespace Lineage;
 
-use IODigital\ABlockPHP\ABlockClient;
+use Lineage\Client;
 use Illuminate\Database\Eloquent\Model;
-use IODigital\ABlockLaravel\Models\ABlockWallet;
-use IODigital\ABlockLaravel\Models\ABlockKeypair;
-use IODigital\ABlockLaravel\Models\ABlockTransaction;
-use IODigital\ABlockPHP\DTO\EncryptedWalletDTO;
-use IODigital\ABlockPHP\DTO\PaymentAssetDTO;
+use Lineage\Models\LineageWallet;
+use Lineage\Models\LineageKeypair;
+use Lineage\Models\LineageTransaction;
+use Lineage\DTO\EncryptedWalletDTO;
+use Lineage\DTO\PaymentAssetDTO;
 use Illuminate\Database\UniqueConstraintViolationException;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockLaravel\Exceptions\NameNotUniqueException;
+use Lineage\Exceptions\PassPhraseNotSetException;
+use Lineage\Exceptions\NameNotUniqueException;
 use Exception;
 
-class AWallet
+class Lineage
 {
-    private ?ABlockWallet $activeWallet;
+    private ?LineageWallet $activeWallet;
 
     public function __construct(
-        private ABlockClient $client
+        private Client $client
     ) {}
 
     public function setPassPhrase(string $passPhrase): void
@@ -44,7 +44,7 @@ class AWallet
             $this->setPassPhrase($passPhrase);
             $walletDTO = $this->client->createWallet();
 
-            $wallet = $owner->aBlockWallets()->create([
+            $wallet = $owner->lineageWallets()->create([
                 'name' => $name,
                 'master_key_encrypted_base64' => $walletDTO->getMasterKeyEncrypted(),
                 'nonce_hex'                   => $walletDTO->getNonce(),
@@ -66,7 +66,7 @@ class AWallet
         }
     }
 
-    public function setActive(ABlockWallet $wallet, string $passPhrase): bool
+    public function setActive(LineageWallet $wallet, string $passPhrase): bool
     {
         try {
             $this->setPassPhrase($passPhrase);
@@ -85,7 +85,7 @@ class AWallet
         }
     }
 
-    public function createKeypair(string $name): ABlockKeypair
+    public function createKeypair(string $name): LineageKeypair
     {
         try {
             if(!$name) {
@@ -126,7 +126,7 @@ class AWallet
     }
 
     public function createAsset(
-        ABlockKeypair $keyPair,
+        LineageKeypair $keyPair,
         string $name,
         int $amount = 1,
         bool $defaultHash = false,
@@ -170,7 +170,7 @@ class AWallet
         string $myAddress,
         PaymentAssetDTO $myAsset,
         PaymentAssetDTO $otherPartyAsset
-    ): ABlockTransaction {
+    ): LineageTransaction {
         $keypairs = $this->getActiveWalletKeypairs();
 
         $encryptedTransaction = $this->client->createTradeRequest(
@@ -246,7 +246,7 @@ class AWallet
         );
     }
 
-    public function getActiveWallet(): ABlockWallet|null
+    public function getActiveWallet(): LineageWallet|null
     {
         return $this->activeWallet ?? null;
     }

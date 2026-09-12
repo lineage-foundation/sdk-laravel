@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class CreateItem extends Command
 {
@@ -18,14 +13,14 @@ class CreateItem extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:create-item';
+    protected $signature = 'lineage:create-item';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates an item in a user wallet';
+    protected $description = 'Create an item in a user wallet';
 
     /**
      * Execute the console command.
@@ -47,7 +42,7 @@ class CreateItem extends Command
             }
         } while (!isset($qty));
 
-        $item = AWallet::createAsset(
+        $item = \Lineage::createAsset(
             keyPair: $keyPair,
             name: $itemName,
             amount: $qty

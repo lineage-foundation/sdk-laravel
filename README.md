@@ -1,20 +1,64 @@
-If you can decipher this, use it.
+# lineage/laravel
 
-`composer require io-digital/a-block-laravel`
+Laravel wrapper for the Lineage blockchain SDK.
 
-Some env settings:
+## Installation
 
-A_BLOCK_COMPUTE_HOST=https://compute.a-block.net
-A_BLOCK_STORAGE_HOST=https://storage.a-block.net
-A_BLOCK_INTERCOM_HOST=https://intercom.a-block.net
+```bash
+composer require lineage/laravel
+```
 
-`php artisan vendor:publish --tag=a-block-config`
+## Configuration
 
-Add this trait to any model that has wallets
-`use IODigital\ABlockLaravel\Traits\HasABlockWallets;`
+Add to your `.env`:
 
-The step into DOS world and run 
-`php artisan ablock:command-app`
+```
+LINEAGE_COMPUTE_HOST=https://compute.aiblock.dev
+LINEAGE_STORAGE_HOST=https://storage.aiblock.dev
+LINEAGE_INTERCOM_HOST=https://intercom.aiblock.dev
+```
+
+Publish the config file:
+
+```bash
+php artisan vendor:publish --tag=lineage-config
+```
+
+## Usage
+
+Add the `HasLineageWallets` trait to any model that has wallets (e.g. your User model):
+
+```php
+use Lineage\Traits\HasLineageWallets;
+
+class User extends Authenticatable
+{
+    use HasLineageWallets;
+}
+```
+
+This provides:
+- `lineageWallets()` – relationship to wallets
+- `openDefaultLineageWallet(string $passPhrase)` – open the user’s default wallet
+
+### Artisan commands
+
+Interactive CLI:
+
+```bash
+php artisan lineage:command-app
+```
+
+Other commands:
+- `lineage:create-wallet-for-user` – create a wallet for an existing user
+- `lineage:check-balance` – check wallet balance
+- `lineage:create-keypair-for-wallet` – create a keypair
+- `lineage:create-item` – create an item in a wallet
+- `lineage:send-item-to-address` – send an item to an address
+- `lineage:get-pending-transactions` – list pending transactions
+- `lineage:create-trade-request` – create a trade request
+- `lineage:accept-pending-transaction` – accept a pending transaction
+- `lineage:reject-pending-transaction` – reject a pending transaction
 
 ## Links
 
@@ -25,6 +69,4 @@ The step into DOS world and run
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-## License
-
-MIT – see [LICENSE](LICENSE).
+## LicenseMIT – see [LICENSE](LICENSE).

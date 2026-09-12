@@ -1,6 +1,6 @@
 <?php
 
-namespace IODigital\LaravelZenotta\Database\Factories;
+namespace Lineage\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 

@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class CheckBalance extends Command
 {
@@ -18,22 +13,22 @@ class CheckBalance extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:check-balance';
+    protected $signature = 'lineage:check-balance';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command checks the balance of a user wallet';
+    protected $description = 'Check the balance of a user wallet';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        $wallet = $this->openWallet();
-        $balance = AWallet::fetchBalance();
+        $this->openWallet();
+        $balance = \Lineage::fetchBalance();
 
         dump($balance);
     }

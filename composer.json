@@ -1,36 +1,36 @@
 {
-    "name": "io-digital/a-block-laravel",
-    "description": "A Laravel wrapper for io-digital/a-block-php",
+    "name": "lineage/laravel",
+    "description": "Laravel wrapper for the Lineage blockchain SDK",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "blockchain",
-        "ablock",
+        "lineage",
         "laravel"
     ],
     "autoload": {
         "psr-4": {
-            "IODigital\\ABlockLaravel\\": "src/"
+            "Lineage\\": "src/"
         }
     },
     "authors": [
         {
-            "name": "Rian Zietsman",
-            "email": "rian@io.co.za",
+            "name": "Lineage Foundation",
+            "email": "info@lineage.foundation",
             "role": "developer"
         }
     ],
     "require": {
         "php": "^8.2",
-        "io-digital/a-block-php": "^0.1.0"
+        "lineage/php": "^0.1.0"
     },
     "extra": {
         "laravel": {
             "providers": [
-                "IODigital\\ABlockLaravel\\Providers\\ABlockServiceProvider"
+                "Lineage\\Providers\\LineageServiceProvider"
             ],
             "aliases": {
-                "AWallet": "IODigital\\ABlockLaravel\\Facades\\AWalletFacade"
+                "Lineage": "Lineage\\Facades\\LineageFacade"
             }
         }
     }

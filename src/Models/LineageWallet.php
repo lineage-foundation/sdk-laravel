@@ -1,6 +1,6 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Models;
+namespace Lineage\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -8,9 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Builder;
 
-class ABlockWallet extends Model
+class LineageWallet extends Model
 {
     use HasFactory;
+
+    protected $table = 'lineage_wallets';
 
     protected $fillable = [
         'default',
@@ -28,12 +30,12 @@ class ABlockWallet extends Model
 
     public function keypairs(): HasMany
     {
-        return $this->hasMany(ABlockKeypair::class);
+        return $this->hasMany(LineageKeypair::class);
     }
 
     public function transactions(): HasMany
     {
-        return $this->hasMany(ABlockTransaction::class, 'a_block_wallet_id');
+        return $this->hasMany(LineageTransaction::class, 'lineage_wallet_id');
     }
 
     public function scopeDefault(Builder $query): void
@@ -45,8 +47,8 @@ class ABlockWallet extends Model
 
     protected static function booted(): void
     {
-        static::created(function (ABlockWallet $wallet) {
-            $ids = $wallet->owner->aBlockWallets->where('id', '!=', $wallet->id)->pluck('id');
+        static::created(function (LineageWallet $wallet) {
+            $ids = $wallet->owner->lineageWallets->where('id', '!=', $wallet->id)->pluck('id');
             self::whereIn('id', $ids)->update([
                 'default' => false
             ]);

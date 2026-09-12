@@ -1,13 +1,12 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use AWallet;
 use Exception;
 use Illuminate\Console\Command;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
+use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NameNotUniqueException;
+use Lineage\Exceptions\PassPhraseNotSetException;
 
 class CreateWalletForUser extends Command
 {
@@ -17,14 +16,14 @@ class CreateWalletForUser extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:create-wallet-for-user';
+    protected $signature = 'lineage:create-wallet-for-user';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates a wallet for an existing user';
+    protected $description = 'Create a wallet for an existing user';
 
     /**
      * Execute the console command.
@@ -32,13 +31,14 @@ class CreateWalletForUser extends Command
     public function handle()
     {
         $user = $this->findUserByEmail();
+        $walletAndSeedPhrase = null;
 
         do {
             try {
                 $name = $this->promptForNonEmptyString('Please enter a name for your wallet', 'default');
                 $passPhrase = $this->promptForNonEmptyString('Please enter a pass phrase for the wallet', 'passphrase');
 
-                $walletAndSeedPhrase = AWallet::create(
+                $walletAndSeedPhrase = \Lineage::create(
                     name: $name,
                     passPhrase: $passPhrase,
                     owner: $user
@@ -55,7 +55,7 @@ class CreateWalletForUser extends Command
         $this->line("{$walletAndSeedPhrase['wallet']->name} seed phrase: {$walletAndSeedPhrase['seedPhrase']}");
 
         if ($this->confirm('Do you wish to create a default keypair for this wallet?', 'yes')) {
-            $keyPair = AWallet::createKeypair("default");
+            $keyPair = \Lineage::createKeypair("default");
             $this->line("Keypair created with address: {$keyPair->address}");
         }
     }

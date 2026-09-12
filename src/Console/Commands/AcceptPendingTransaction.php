@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class AcceptPendingTransaction extends Command
 {
@@ -18,14 +13,14 @@ class AcceptPendingTransaction extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:accept-pending-transaction';
+    protected $signature = 'lineage:accept-pending-transaction';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command accepts a pending trade request, from the receiver side';
+    protected $description = 'Accept a pending trade request from the receiver side';
 
     /**
      * Execute the console command.
@@ -33,9 +28,9 @@ class AcceptPendingTransaction extends Command
     public function handle()
     {
         $this->openWallet();
-        $druid = $qtyResponse = $this->promptForNonEmptyString("What is the DRUID reference to the transaction?");
+        $druid = $this->promptForNonEmptyString("What is the DRUID reference to the transaction?");
 
-        $result = AWallet::acceptPendingTransaction(
+        $result = \Lineage::acceptPendingTransaction(
             druid: $druid,
         );
 

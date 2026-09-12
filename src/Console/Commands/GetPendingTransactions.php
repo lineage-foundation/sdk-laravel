@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class GetPendingTransactions extends Command
 {
@@ -18,14 +13,14 @@ class GetPendingTransactions extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:get-pending-transactions';
+    protected $signature = 'lineage:get-pending-transactions';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that fetches all pending trade requests';
+    protected $description = 'Fetch all pending trade requests';
 
     /**
      * Execute the console command.
@@ -33,7 +28,7 @@ class GetPendingTransactions extends Command
     public function handle()
     {
         $this->openWallet();
-        $transactions = AWallet::getPendingTransactions();
+        $transactions = \Lineage::getPendingTransactions();
         dump($transactions);
     }
 }

@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class CreateTradeRequest extends Command
 {
@@ -18,14 +13,14 @@ class CreateTradeRequest extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:create-trade-request';
+    protected $signature = 'lineage:create-trade-request';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates a trade request between 2 addresses';
+    protected $description = 'Create a trade request between 2 addresses';
 
     /**
      * Execute the console command.
@@ -43,19 +38,19 @@ class CreateTradeRequest extends Command
         $receiveHash = $this->promptForNonEmptyString("What is the hash of the asset you wish to receive?", 'tokens');
         $receiveQty = $this->promptForNonEmptyString("How many $receiveHash you wish to receive?");
 
-        $sendAsset = AWallet::getPaymentAssetObject(
+        $sendAsset = \Lineage::getPaymentAssetObject(
             amount: $selectedAssetsToSend['qty'],
             hash: $selectedAssetsToSend['name'],
             metaData: null
         );
 
-        $receiveAsset = AWallet::getPaymentAssetObject(
+        $receiveAsset = \Lineage::getPaymentAssetObject(
             amount: $receiveQty,
             hash: $receiveHash,
             metaData: null
         );
 
-        $transaction = AWallet::createTradeRequest(
+        $transaction = \Lineage::createTradeRequest(
             myAddress: $myAddress,
             myAsset: $sendAsset,
             otherPartyAddress: $otherPartyAddress,

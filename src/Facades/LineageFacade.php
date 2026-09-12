@@ -1,13 +1,13 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Facades;
+namespace Lineage\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class AWalletFacade extends Facade
+class LineageFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'a-wallet';
+        return 'lineage';
     }
 }
