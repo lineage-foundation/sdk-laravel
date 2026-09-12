@@ -13,6 +13,11 @@
             "Lineage\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Lineage\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Lineage Foundation",
@@ -22,8 +27,20 @@
     ],
     "require": {
         "php": "^8.2",
-        "lineage/php": "^0.1.0"
+        "lineage/php": "^0.2.0"
     },
+    "require-dev": {
+        "orchestra/testbench": "^11.0"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../sdk-php",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "extra": {
         "laravel": {
             "providers": [

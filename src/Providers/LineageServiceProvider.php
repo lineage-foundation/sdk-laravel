@@ -24,17 +24,19 @@ class LineageServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->mergeConfigFrom(__DIR__ . '/../../config/lineage.php', 'lineage');
+
         $this->app->singleton(Client::class, function (Application $app) {
             return new Client(
-                computeHost: config('lineage.compute_host'),
-                intercomHost: config('lineage.intercom_host'),
+                mempoolHost: config('lineage.mempool_host'),
                 storageHost: config('lineage.storage_host'),
+                apiKey: config('lineage.api_key'),
             );
         });
 
-        $this->app->bind('lineage', function () {
+        $this->app->singleton('lineage', function (Application $app) {
             return new Lineage(
-                client: $this->app->make(Client::class)
+                client: $app->make(Client::class)
             );
         });
     }

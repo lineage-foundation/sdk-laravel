@@ -5,14 +5,12 @@ declare(strict_types=1);
 return [
     /*
     |--------------------------------------------------------------------------
-    | Lineage endpoints
+    | Lineage /v1 endpoints
     |--------------------------------------------------------------------------
     |
     */
 
-    'proxy_url' => env('LINEAGE_PROXY_URL'),
-    'compute_host' => env('LINEAGE_COMPUTE_HOST'),
+    'mempool_host' => env('LINEAGE_MEMPOOL_HOST'),
     'storage_host' => env('LINEAGE_STORAGE_HOST'),
-    'notary_host' => env('LINEAGE_NOTARY_HOST'),
-    'intercom_host' => env('LINEAGE_INTERCOM_HOST'),
+    'api_key' => env('LINEAGE_API_KEY'),
 ];
