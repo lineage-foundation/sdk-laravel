@@ -1,14 +1,10 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NotImplemented;
 
 class GetPendingTransactions extends Command
 {
@@ -18,22 +14,32 @@ class GetPendingTransactions extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:get-pending-transactions';
+    protected $signature = 'lineage:get-pending-transactions';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that fetches all pending trade requests';
+    protected $description = 'Fetch all pending trade requests';
 
     /**
      * Execute the console command.
+     *
+     * 2-way payments (trade requests) are deferred until the /v1 endpoints
+     * for them land, so this command surfaces the deferral immediately
+     * rather than walking the wallet-opening flow first.
      */
-    public function handle()
+    public function handle(): int
     {
-        $this->openWallet();
-        $transactions = AWallet::getPendingTransactions();
-        dump($transactions);
+        try {
+            \Lineage::getPendingTransactions();
+        } catch (NotImplemented $e) {
+            $this->error($e->getMessage());
+
+            return self::FAILURE;
+        }
+
+        return self::SUCCESS;
     }
 }

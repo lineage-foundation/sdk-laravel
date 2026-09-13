@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class CreateItem extends Command
 {
@@ -18,14 +13,14 @@ class CreateItem extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:create-item';
+    protected $signature = 'lineage:create-item';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command that creates an item in a user wallet';
+    protected $description = 'Create an item in a user wallet';
 
     /**
      * Execute the console command.
@@ -34,8 +29,6 @@ class CreateItem extends Command
     {
         $wallet = $this->openWallet();
         $keyPair = $this->keypairSelect(wallet: $wallet);
-
-        $itemName = $this->promptForNonEmptyString("What is the item?");
 
         do {
             $qtyResponse = $this->promptForNonEmptyString("How many items?");
@@ -47,12 +40,17 @@ class CreateItem extends Command
             }
         } while (!isset($qty));
 
-        $item = AWallet::createAsset(
+        $metadata = $this->ask("Any metadata for this item? (optional)");
+        $useDefaultGenesisHash = $this->confirm("Use the default genesis hash?", true);
+
+        $item = \Lineage::createItems(
             keyPair: $keyPair,
-            name: $itemName,
-            amount: $qty
+            defaultGenesisHash: $useDefaultGenesisHash,
+            amount: $qty,
+            metadata: $metadata ?: null,
         );
 
-        $this->line("$qty items named '$itemName' created, unique hash: {$item->getDrsTxHash()}");
+        $this->line("$qty item(s) created for keypair '{$keyPair->name}'");
+        dump($item);
     }
 }

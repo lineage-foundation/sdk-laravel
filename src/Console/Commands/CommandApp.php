@@ -1,14 +1,9 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
 
 class CommandApp extends Command
 {
@@ -18,14 +13,14 @@ class CommandApp extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:command-app';
+    protected $signature = 'lineage:command-app';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This runs the commands in a flow';
+    protected $description = 'Interactive Lineage command line app';
 
     public const COMMAND_OPEN_WALLET = 'Open Wallet';
     public const COMMAND_CREATE_WALLET = 'Create New Wallet';
@@ -46,7 +41,7 @@ class CommandApp extends Command
      */
     public function handle()
     {
-        $this->line("Welcome to the ABlock command line app.");
+        $this->line("Welcome to the Lineage command line app.");
         while (true) {
             $action = $this->choice(
                 "Let's get started",
@@ -64,7 +59,7 @@ class CommandApp extends Command
                     $this->openWallet(closeExisting: true);
                     break;
                 case self::COMMAND_CREATE_WALLET:
-                    $this->call('ablock:create-wallet-for-user');
+                    $this->call('lineage:create-wallet-for-user');
                     break;
                 case self::COMMAND_GO_BACK:
                     $this->line("Bye!");
@@ -76,7 +71,7 @@ class CommandApp extends Command
                 default:
             }
 
-            $wallet = AWallet::getActiveWallet();
+            $wallet = \Lineage::getActiveWallet();
             if(!$wallet) {
                 continue;
             }
@@ -108,10 +103,10 @@ class CommandApp extends Command
                     case self::COMMAND_GO_BACK:
                         break(2);
                     case self::COMMAND_BALANCE_ENQUIRY:
-                        $this->call('ablock:check-balance');
+                        $this->call('lineage:check-balance');
                         break;
                     case self::COMMAND_CREATE_KEYPAIR:
-                        $this->call('ablock:create-keypair-for-wallet');
+                        $this->call('lineage:create-keypair-for-wallet');
                         break;
                     case self::COMMAND_SHOW_KEYPAIRS:
                         $this->table(
@@ -125,22 +120,22 @@ class CommandApp extends Command
                         );
                         break;
                     case self::COMMAND_CREATE_ITEM:
-                        $this->call('ablock:create-item');
+                        $this->call('lineage:create-item');
                         break;
                     case self::COMMAND_SEND_ITEM:
-                        $this->call('ablock:send-item-to-address');
+                        $this->call('lineage:send-item-to-address');
                         break;
                     case self::COMMAND_GET_PENDING_TRANSACTIONS:
-                        $this->call('ablock:get-pending-transactions');
+                        $this->call('lineage:get-pending-transactions');
                         break;
                     case self::COMMAND_MAKE_TRADE_REQUEST:
-                        $this->call('ablock:create-trade-request');
+                        $this->call('lineage:create-trade-request');
                         break;
                     case self::COMMAND_ACCEPT_PENDING_TRANSACTION:
-                        $this->call('ablock:accept-pending-transaction');
+                        $this->call('lineage:accept-pending-transaction');
                         break;
                     case self::COMMAND_REJECT_PENDING_TRANSACTION:
-                        $this->call('ablock:reject-pending-transaction');
+                        $this->call('lineage:reject-pending-transaction');
                         break;
                     case self::COMMAND_GET_BLOCKCHAIN_ENTRY:
                         $hash = $this->ask("Enter the hash");
@@ -157,12 +152,12 @@ class CommandApp extends Command
     private function getBlockchainEntry(string $hash)
     {
         try {
-            $result = AWallet::getBlockchainEntry($hash);
+            $result = \Lineage::getBlockchainEntry($hash);
 
             foreach($result['content']['Transaction']['outputs'] as $output) {
                 dump($output['value']);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
 

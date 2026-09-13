@@ -2,18 +2,16 @@
 
 declare(strict_types=1);
 
-namespace IODigital\ABlockLaravel\Console\Traits;
+namespace Lineage\Console\Traits;
 
 use App\Models\User;
-use IODigital\ABlockLaravel\Models\ABlockWallet;
-use IODigital\ABlockLaravel\Models\ABlockKeypair;
-use IODigital\ABlockPHP\Exceptions\KeypairNotDecryptedException;
-use AWallet;
+use Lineage\Models\LineageWallet;
+use Lineage\Models\LineageKeypair;
 use Exception;
 
 trait UserWallets
 {
-    public function promptForNonEmptyString(string $question, string $default = null): string
+    public function promptForNonEmptyString(string $question, ?string $default = null): string
     {
         do {
             $string = $this->ask($question, $default);
@@ -25,9 +23,9 @@ trait UserWallets
         return $string;
     }
 
-    public function openWallet(string $question = null, bool $closeExisting = false): ?ABlockWallet
+    public function openWallet(?string $question = null, bool $closeExisting = false): ?LineageWallet
     {
-        if($closeExisting === true || !AWallet::getActiveWallet()) {
+        if($closeExisting === true || !\Lineage::getActiveWallet()) {
             $user = $this->findUserByEmail($question);
 
             try {
@@ -40,12 +38,12 @@ trait UserWallets
             $this->openUserWallet($wallet);
         }
 
-        return AWallet::getActiveWallet();
+        return \Lineage::getActiveWallet();
     }
 
     public function assetsSelect(): array
     {
-        $balance = AWallet::fetchBalance();
+        $balance = \Lineage::fetchBalance();
         $assets = collect(['tokens' => $balance['total']['tokens']]);
 
         foreach($balance['total']['items'] as $name => $qty) {
@@ -60,17 +58,12 @@ trait UserWallets
             $allowMultipleSelections = false
         );
 
-        // stuff commented out here as I'd like to be able to select and trade multiple assets
-        // $return = [];
-
-        // foreach($assetNames as $assetName) {
         $qtyAvailable = $assets[$assetName];
 
         do {
             $qtyToSend = $this->ask("How many '$assetName' are you sending (you have $qtyAvailable available)?");
 
             if(is_numeric($qtyToSend) && is_integer((int) $qtyToSend) && $qtyToSend > 0 && $qtyToSend <= $qtyAvailable) {
-                //$return[$assetName] = (int) $qtyToSend;
                 $return = [
                     'name' => $assetName,
                     'qty' => (int) $qtyToSend
@@ -79,12 +72,11 @@ trait UserWallets
                 $this->error("Please enter an integer less than or equal to the available number");
             }
         } while (!isset($return));
-        // }
 
         return $return;
     }
 
-    private function findUserByEmail(string $question = null): User
+    private function findUserByEmail(?string $question = null): User
     {
         do {
             $email = $this->promptForNonEmptyString($question ?? "What is the user's email address?");
@@ -98,9 +90,9 @@ trait UserWallets
         return $user;
     }
 
-    private function walletSelect(User $user): ABlockWallet
+    private function walletSelect(User $user): LineageWallet
     {
-        $wallets = $user->aBlockWallets()->orderBy('default', 'DESC')->get();
+        $wallets = $user->lineageWallets()->orderBy('default', 'DESC')->get();
 
         if (!$wallets->count()) {
             throw new \Exception("User does not have any wallets");
@@ -117,7 +109,7 @@ trait UserWallets
         return $wallets->where('name', $walletName)->first();
     }
 
-    public function keypairSelect(ABlockWallet $wallet, string $question = null): ABlockKeypair
+    public function keypairSelect(LineageWallet $wallet, ?string $question = null): LineageKeypair
     {
         $keypairs = $wallet->keypairs()->orderBy('created_at', 'DESC')->get();
 
@@ -136,13 +128,13 @@ trait UserWallets
         return $keypairs->where('name', $keypairName)->first();
     }
 
-    private function openUserWallet(ABlockWallet $wallet)
+    private function openUserWallet(LineageWallet $wallet)
     {
         do {
             $passPhrase = $this->promptForNonEmptyString('Please enter the pass phrase for this wallet', 'passphrase');
 
             try {
-                $walletOpened = AWallet::setActive($wallet, $passPhrase);
+                $walletOpened = \Lineage::setActive($wallet, $passPhrase);
             } catch (Exception $e) {
                 $this->error("Could not open this wallet");
             }

@@ -1,14 +1,10 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Console\Commands;
+namespace Lineage\Console\Commands;
 
-use App\Models\User;
 use Illuminate\Console\Command;
-use AWallet;
-use IODigital\ABlockPHP\Exceptions\PassPhraseNotSetException;
-use IODigital\ABlockPHP\Exceptions\NameNotUniqueException;
-use Exception;
-use IODigital\ABlockLaravel\Console\Traits\UserWallets;
+use Lineage\Console\Traits\UserWallets;
+use Lineage\Exceptions\NotImplemented;
 
 class AcceptPendingTransaction extends Command
 {
@@ -18,27 +14,34 @@ class AcceptPendingTransaction extends Command
      *
      * @var string
      */
-    protected $signature = 'ablock:accept-pending-transaction';
+    protected $signature = 'lineage:accept-pending-transaction';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'This is a command accepts a pending trade request, from the receiver side';
+    protected $description = 'Accept a pending trade request from the receiver side';
 
     /**
      * Execute the console command.
+     *
+     * 2-way payments (trade requests) are deferred until the /v1 endpoints
+     * for them land, so this surfaces the deferral rather than pretending
+     * to open a wallet for an operation that cannot complete.
      */
-    public function handle()
+    public function handle(): int
     {
-        $this->openWallet();
-        $druid = $qtyResponse = $this->promptForNonEmptyString("What is the DRUID reference to the transaction?");
+        $druid = $this->promptForNonEmptyString("What is the DRUID reference to the transaction?");
 
-        $result = AWallet::acceptPendingTransaction(
-            druid: $druid,
-        );
+        try {
+            \Lineage::acceptPendingTransaction(druid: $druid);
+        } catch (NotImplemented $e) {
+            $this->error($e->getMessage());
 
-        dump($result);
+            return self::FAILURE;
+        }
+
+        return self::SUCCESS;
     }
 }

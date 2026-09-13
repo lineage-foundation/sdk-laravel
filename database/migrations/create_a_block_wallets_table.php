@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 return new class () extends Migration {
     public function up(): void
     {
-        Schema::create('a_block_wallets', function (Blueprint $table) {
+        Schema::create('lineage_wallets', function (Blueprint $table) {
             $table->id();
             $table->morphs('owner');
             $table->boolean('default')->default(true);

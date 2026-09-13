@@ -1,26 +1,27 @@
 <?php
 
-namespace IODigital\ABlockLaravel\Models;
+namespace Lineage\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ABlockKeypair extends Model
+class LineageTransaction extends Model
 {
     use HasFactory;
 
+    protected $table = 'lineage_transactions';
+
     protected $fillable = [
-        'a_block_wallet_id',
-        'name',
+        'lineage_wallet_id',
+        'status',
+        'druid',
         'nonce',
-        'save',
-        'address',
+        'content',
     ];
 
     public function wallet(): BelongsTo
     {
-        return $this->belongsTo(ABlockWallet::class, 'a_block_wallet_id');
+        return $this->belongsTo(LineageWallet::class, 'lineage_wallet_id');
     }
 }
