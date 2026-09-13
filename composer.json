@@ -28,7 +28,7 @@
         }
     ],
     "require": {
-        "php": "^8.2",
+        "php": ">=8.4",
         "lineage/php": "^0.2.0"
     },
     "require-dev": {
@@ -36,6 +36,7 @@
     },
     "repositories": [
         {
+            "//": "TODO: once lineage/php is published to Packagist, drop this path repo and require \"lineage/php\": \"^0.3.0\" instead.",
             "type": "path",
             "url": "../sdk-php",
             "options": {
