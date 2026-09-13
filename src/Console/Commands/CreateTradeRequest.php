@@ -4,7 +4,7 @@ namespace Lineage\Console\Commands;
 
 use Illuminate\Console\Command;
 use Lineage\Console\Traits\UserWallets;
-use Lineage\Exceptions\NotImplemented;
+use Lineage\Serialization;
 
 class CreateTradeRequest extends Command
 {
@@ -25,21 +25,31 @@ class CreateTradeRequest extends Command
 
     /**
      * Execute the console command.
-     *
-     * 2-way payments (trade requests) are deferred until the /v1 endpoints
-     * for them land, so this command no longer walks the wallet/asset
-     * selection flow - it surfaces the deferral immediately.
      */
     public function handle(): int
     {
         try {
-            \Lineage::createTradeRequest(
-                otherPartyAddress: '',
-                myAsset: null,
-                myAddress: '',
-                otherPartyAsset: null,
+            $wallet = $this->openWallet();
+
+            if (!$wallet) {
+                return self::FAILURE;
+            }
+
+            $myKeypair = $this->keypairSelect($wallet, 'Which of your keypairs should receive the other party\'s asset?');
+            $otherPartyAddress = $this->promptForNonEmptyString("What is the other party's address?");
+
+            $myAmount = (int) $this->promptForNonEmptyString('How many tokens are you offering?');
+            $otherPartyAmount = (int) $this->promptForNonEmptyString('How many tokens do you want in return?');
+
+            $result = \Lineage::createTradeRequest(
+                otherPartyAddress: $otherPartyAddress,
+                myAsset: Serialization::assetToken($myAmount),
+                myAddress: $myKeypair->address,
+                otherPartyAsset: Serialization::assetToken($otherPartyAmount),
             );
-        } catch (NotImplemented $e) {
+
+            dump($result);
+        } catch (\Exception $e) {
             $this->error($e->getMessage());
 
             return self::FAILURE;

@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: lineage-foundation/sdk-php
-          ref: feat/v1-migration
+          ref: main
           path: sdk-php
 
       - name: Set up PHP

@@ -31,6 +31,7 @@ class LineageServiceProvider extends ServiceProvider
                 mempoolHost: config('lineage.mempool_host'),
                 storageHost: config('lineage.storage_host'),
                 apiKey: config('lineage.api_key'),
+                valenceHost: config('lineage.valence_host'),
             );
         });
 

@@ -3,7 +3,6 @@
 namespace Lineage\Tests\Feature;
 
 use Lineage\Client;
-use Lineage\Exceptions\NotImplemented;
 use Lineage\Facades\LineageFacade as Lineage;
 use Lineage\Tests\TestCase;
 
@@ -25,22 +24,5 @@ class LineageServiceTest extends TestCase
         $result = Lineage::fetchBalance($addresses);
 
         $this->assertSame($balance, $result);
-    }
-
-    public function test_create_trade_request_throws_not_implemented(): void
-    {
-        $mockClient = $this->createMock(Client::class);
-        $mockClient->expects($this->never())->method('createTradeRequest');
-
-        $this->app->singleton(Client::class, fn () => $mockClient);
-
-        $this->expectException(NotImplemented::class);
-
-        Lineage::createTradeRequest(
-            otherPartyAddress: 'other-address',
-            myAsset: null,
-            myAddress: 'my-address',
-            otherPartyAsset: null,
-        );
     }
 }

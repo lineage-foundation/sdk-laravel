@@ -18,6 +18,16 @@ class LineageTransaction extends Model
         'druid',
         'nonce',
         'content',
+        'encrypted_half',
+        'sender_expectation',
+        'receiver_expectation',
+        'mempool_host',
+    ];
+
+    protected $casts = [
+        'encrypted_half' => 'array',
+        'sender_expectation' => 'array',
+        'receiver_expectation' => 'array',
     ];
 
     public function wallet(): BelongsTo
