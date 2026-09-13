@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a54fa775e5f6431f87ab5bfa1262ed70",
+    "content-hash": "39b4b47fcc4f24ca4f0933c18df4f624",
     "packages": [
         {
             "name": "furqansiddiqui/bip39-mnemonic-php",
@@ -382,13 +382,13 @@
             "dist": {
                 "type": "path",
                 "url": "../sdk-php",
-                "reference": "9b358eaaa602b23458900493d8a46c05ed186fd0"
+                "reference": "4f822d53403f8bdc11b016e2b8b18ac406579743"
             },
             "require": {
                 "ext-sodium": "*",
                 "furqansiddiqui/bip39-mnemonic-php": "^0.1.7",
                 "guzzlehttp/guzzle": "^7.8 || ^8.0",
-                "php": "^8.2",
+                "php": "^8.4",
                 "simplito/elliptic-php": "^1.0"
             },
             "require-dev": {
@@ -9242,7 +9242,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2"
+        "php": ">=8.4"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"

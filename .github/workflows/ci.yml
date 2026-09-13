@@ -10,34 +10,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout sdk-laravel
-        uses: actions/checkout@v4
-
       # sdk-laravel's composer.json resolves lineage/php via a "path"
       # repository (../sdk-php) rather than Packagist, because sdk-php's own
-      # /v1 migration hasn't been published yet. Checking out the matching
-      # sibling branch here into ../sdk-php (relative to $GITHUB_WORKSPACE,
-      # same as the local dev layout) lets `composer install` resolve it
-      # exactly as it does on a workstation. Once lineage/php ships a tagged
-      # /v1 release to Packagist, drop this step, remove the `repositories`
-      # entry from composer.json, and let `require.lineage/php` resolve
-      # normally.
+      # /v1 migration hasn't been published yet. actions/checkout refuses to
+      # place a repo outside $GITHUB_WORKSPACE, so both repos are checked out
+      # as siblings *under* the workspace (sdk-laravel here, sdk-php below)
+      # and every composer/phpunit step runs with working-directory:
+      # sdk-laravel, so the relative path ../sdk-php still resolves exactly
+      # as it does on a workstation. Once lineage/php ships a tagged /v1
+      # release to Packagist, drop the sdk-php checkout step, remove the
+      # `repositories` entry from composer.json, and let `require.lineage/php`
+      # resolve normally (and this sibling layout can go away).
+      - name: Checkout sdk-laravel
+        uses: actions/checkout@v4
+        with:
+          path: sdk-laravel
+
       - name: Checkout sdk-php (sibling path dependency)
         uses: actions/checkout@v4
         with:
           repository: lineage-foundation/sdk-php
-          ref: feat/v1-migration
-          path: ../sdk-php
+          ref: main
+          path: sdk-php
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.2'
+          php-version: '8.4'
           extensions: sodium
           coverage: none
 
       - name: Install dependencies
+        working-directory: sdk-laravel
         run: composer install --prefer-dist --no-progress
 
       - name: Run test suite
+        working-directory: sdk-laravel
         run: vendor/bin/phpunit
