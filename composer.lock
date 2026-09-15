@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "39b4b47fcc4f24ca4f0933c18df4f624",
+    "content-hash": "aa7790da8157fde5e04c4b816e2e95f5",
     "packages": [
         {
             "name": "furqansiddiqui/bip39-mnemonic-php",
@@ -379,10 +379,16 @@
         {
             "name": "lineage/php",
             "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lineage-foundation/sdk-php.git",
+                "reference": "fb8ee7d20c6cccdb46d7935fc8c5154072e3295e"
+            },
             "dist": {
-                "type": "path",
-                "url": "../sdk-php",
-                "reference": "4f822d53403f8bdc11b016e2b8b18ac406579743"
+                "type": "zip",
+                "url": "https://api.github.com/repos/lineage-foundation/sdk-php/zipball/fb8ee7d20c6cccdb46d7935fc8c5154072e3295e",
+                "reference": "fb8ee7d20c6cccdb46d7935fc8c5154072e3295e",
+                "shasum": ""
             },
             "require": {
                 "ext-sodium": "*",
@@ -400,11 +406,7 @@
                     "Lineage\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Lineage\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -421,13 +423,10 @@
                 "lineage"
             ],
             "support": {
-                "source": "https://github.com/lineage-foundation/sdk-php",
-                "issues": "https://github.com/lineage-foundation/sdk-php/issues"
+                "issues": "https://github.com/lineage-foundation/sdk-php/issues",
+                "source": "https://github.com/lineage-foundation/sdk-php"
             },
-            "transport-options": {
-                "symlink": true,
-                "relative": true
-            }
+            "time": "2026-09-15T11:07:59+00:00"
         },
         {
             "name": "psr/http-client",

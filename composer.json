@@ -34,16 +34,6 @@
     "require-dev": {
         "orchestra/testbench": "^10.0 || ^11.0"
     },
-    "repositories": [
-        {
-            "//": "TODO: once lineage/php is published to Packagist, drop this path repo and require \"lineage/php\": \"^0.3.0\" instead.",
-            "type": "path",
-            "url": "../sdk-php",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "extra": {
         "laravel": {
             "providers": [
