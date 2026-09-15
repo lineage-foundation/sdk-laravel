@@ -9,6 +9,8 @@ which talks directly to the `/v1` mempool/storage API.
 
 ## Installation
 
+Published on [Packagist](https://packagist.org/packages/lineage/laravel) as `lineage/laravel`.
+
 ```bash
 composer require lineage/laravel
 ```
