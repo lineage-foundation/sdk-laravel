@@ -111,6 +111,29 @@ Lineage::makeTokenPayment(address: $recipientAddress, amount: 1000);
 Note that a newly created/transferred asset only shows up in a subsequent
 `fetchBalance()` call once it has been confirmed by the mempool.
 
+### Item metadata enrichment
+
+`fetchBalance()` attaches each item's genesis `metadata` by default, resolved from
+the storage node (`config('lineage.storage_host')` / `LINEAGE_STORAGE_HOST`). Pass
+`enrich: false` to skip it (zero resolver calls, items returned unmodified):
+
+```php
+$balance = Lineage::fetchBalance($addresses, enrich: false);
+```
+
+Use `getItemInfo()` to resolve an item's full genesis facts by its `genesis_hash`
+— its `metadata`, `total_amount`, `created.block_num` / `created.tx_hash`, and
+`creator_address`:
+
+```php
+$info = Lineage::getItemInfo($genesisHash);
+```
+
+This requires `LINEAGE_STORAGE_HOST` to be configured. Enrichment is best-effort:
+if the resolver is unavailable, `fetchBalance()` still returns — items keep
+whatever `metadata` the balance already carried, or `null` for items that have
+since been transferred.
+
 ## Two-way (DRUID) payments
 
 `createTradeRequest`, `getPendingTransactions`, `acceptPendingTransaction` and

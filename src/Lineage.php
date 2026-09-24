@@ -123,11 +123,24 @@ class Lineage
         return $this->client->getTransactionStatus($hashes);
     }
 
-    public function fetchBalance(?array $addresses = null): array
+    public function fetchBalance(?array $addresses = null, bool $enrich = true): array
     {
         $addressList = $addresses ?? $this->getAddressList();
 
-        return $this->client->fetchBalance($addressList);
+        return $this->client->fetchBalance($addressList, $enrich);
+    }
+
+    /**
+     * Resolve an item's full genesis facts (metadata, total supply, creator,
+     * created block/tx) by its genesis_hash, from the storage node's
+     * GET /v1/items/{genesis_hash}. The result is cached on the underlying
+     * client for the lifetime of the request.
+     *
+     * @return array{genesis_hash: string, metadata: ?string, total_amount: int, created: array{block_num: int, tx_hash: string}, creator_address: ?string}
+     */
+    public function getItemInfo(string $genesisHash): array
+    {
+        return $this->client->getItemInfo($genesisHash);
     }
 
     public function createItems(

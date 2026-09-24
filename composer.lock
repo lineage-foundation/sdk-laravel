@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa7790da8157fde5e04c4b816e2e95f5",
+    "content-hash": "75f2493792366ef0c4c5ed04dac48161",
     "packages": [
         {
             "name": "furqansiddiqui/bip39-mnemonic-php",
@@ -378,16 +378,16 @@
         },
         {
             "name": "lineage/php",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lineage-foundation/sdk-php.git",
-                "reference": "fb8ee7d20c6cccdb46d7935fc8c5154072e3295e"
+                "reference": "e1ebea8b00bb37ec4eb02874bdfcc6411f1a6426"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lineage-foundation/sdk-php/zipball/fb8ee7d20c6cccdb46d7935fc8c5154072e3295e",
-                "reference": "fb8ee7d20c6cccdb46d7935fc8c5154072e3295e",
+                "url": "https://api.github.com/repos/lineage-foundation/sdk-php/zipball/e1ebea8b00bb37ec4eb02874bdfcc6411f1a6426",
+                "reference": "e1ebea8b00bb37ec4eb02874bdfcc6411f1a6426",
                 "shasum": ""
             },
             "require": {
@@ -426,7 +426,7 @@
                 "issues": "https://github.com/lineage-foundation/sdk-php/issues",
                 "source": "https://github.com/lineage-foundation/sdk-php"
             },
-            "time": "2026-09-15T11:07:59+00:00"
+            "time": "2026-09-24T14:52:07+00:00"
         },
         {
             "name": "psr/http-client",
